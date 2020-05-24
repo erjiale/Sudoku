@@ -9,6 +9,7 @@
 #include <iostream>
 #include <vector>
 #include <stack>
+#include <unordered_set>
 
 struct position {
     int row;
@@ -30,7 +31,7 @@ class Sudoku {
         bool isGridFull();
         //  Helper Functions
         std::pair<int, int> nextPositionFrom(int row, int col);
-        
+        // std::vector<int> possibleValues(int row, int col);
     public:
         //  Constructors
         Sudoku();
@@ -39,6 +40,7 @@ class Sudoku {
         //  Methods
         void SolveBoard();
         void PrintBoard();
+        std::vector<int> possibleValues(int row, int col);
 };
 
 #endif

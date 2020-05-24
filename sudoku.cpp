@@ -15,12 +15,20 @@ bool Sudoku::SolveBoard(const std::vector<std::vector<int>>& board, std::stack<p
         3) Choose a value to fill the box, and (1) 
         4) If stack.empty() => return isSolvable = false;
     */
+   std::pair<int, int> pos;
+    if (grid_[0][0] == 0) {
+        pos = std::make_pair(0,0);
+    }
+    
+    pos = nextPositionFrom(0,0);
+   
 
     return 0;
 }
 
 std::pair<int,int> Sudoku::nextPositionFrom(int row, int col) {
     std::pair<int,int> nextPosition;
+
     for (int i = col+1; i < 9; i++) { 
         if(grid_[row][i] == 0){
             nextPosition.first = row;
@@ -43,6 +51,86 @@ std::pair<int,int> Sudoku::nextPositionFrom(int row, int col) {
     nextPosition.first = -1;
     nextPosition.second = -1;
     return nextPosition;
+}
+
+std::vector<int> Sudoku::possibleValues(int row, int col) {
+    // unordered_set => {1,2,3,4,5,6,7,8,9}
+    // row => {1,2,3,4,5,6}
+    // col => {7} 
+    std::vector<int> arr;
+    // std::unordered_set<int> possible_values = {1,2,3,4,5,6,7,8,9};
+
+    // //  Row
+    // for(int c = 0; c < 9; ++c){
+    //     if(col != c){
+    //         auto itr = possible_values.find(grid_copy_[row][c]);
+    //         if(itr != possible_values.end()){
+    //             possible_values.erase(itr);
+    //         }
+    //     }
+    // }
+
+    // // Column
+    // for (int r = 0; r < 9; r++) {
+    //     if (r != row) {
+    //         auto itr = possible_values.find(grid_copy_[r][col]);
+    //         if(itr != possible_values.end()) {
+    //             possible_values.erase(itr);
+    //         }
+    //     }
+    // }
+
+    // 3x3 boxes 
+    int starting_row, starting_col;
+    // 1st : 0 <= row && row <= 2 && 0 <= col && col <= 2
+    if (row < 3 && col < 3) {
+        starting_row = 0;
+        starting_col = 0;
+    }
+    // 2st : 0 <= row && row <= 2 && 0 <= col && col <= 2
+    else if (row < 3 && col < 6) {
+        starting_row = 0;
+        starting_col = 3;
+    }
+    // 3st : 0 <= row && row <= 2 && 0 <= col && col <= 2
+    else if (row < 3 && col < 9) {
+        starting_row = 0;
+        starting_col = 6;
+    }
+    // 4st : 0 <= row && row <= 2 && 0 <= col && col <= 2
+    else if (row < 6 && col < 3) {
+        starting_row = 3;
+        starting_col = 0;
+    }
+    // 5st : 0 <= row && row <= 2 && 0 <= col && col <= 2
+    else if (row < 6 && col < 6) {
+        starting_row = 3;
+        starting_col = 3;
+    }
+    // 6st : 0 <= row && row <= 2 && 0 <= col && col <= 2
+    else if (row < 6 && col < 9) {
+        starting_row = 3;
+        starting_col = 6;
+    }
+    // 7st : 0 <= row && row <= 2 && 0 <= col && col <= 2
+    else if (row < 9 && col < 3) {
+        starting_row = 6;
+        starting_col = 0;
+    }
+    // 8st : 0 <= row && row <= 2 && 0 <= col && col <= 2
+    else if (row < 9 && col < 6) {
+        starting_row = 6;
+        starting_col = 3;
+    }
+    // 9st : 0 <= row && row <= 2 && 0 <= col && col <= 2
+    else {
+        starting_row = 6;
+        starting_col = 6;
+    }
+    
+    std::cout << "starting row: " << starting_row << " | starting col: " << starting_col ;
+    
+    return arr;
 }
 
 bool Sudoku::isBoardSolvable(){
