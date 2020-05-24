@@ -28,6 +28,9 @@ class Sudoku {
         bool SolveBoard(const std::vector<std::vector<int>>& board, std::stack<position>& backtrack_stack);
         bool isBoardSolvable();
         bool isGridFull();
+        //  Helper Functions
+        std::pair<int, int> nextPositionFrom(int row, int col);
+        
     public:
         //  Constructors
         Sudoku();

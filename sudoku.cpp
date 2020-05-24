@@ -9,12 +9,41 @@ bool Sudoku::SolveBoard(const std::vector<std::vector<int>>& board, std::stack<p
     // int row = board.size();
     // int col = board[0].size();
     
-    
-    
+    /*  1) Function to look for next empty position and push to stack. ******* need to push to stack 
+        2) Stack will hold -> position and list of possible values
+                a) if no more possible values, backtrack_stack.pop(), and (3)
+        3) Choose a value to fill the box, and (1) 
+        4) If stack.empty() => return isSolvable = false;
+    */
 
     return 0;
 }
 
+std::pair<int,int> Sudoku::nextPositionFrom(int row, int col) {
+    std::pair<int,int> nextPosition;
+    for (int i = col+1; i < 9; i++) { 
+        if(grid_[row][i] == 0){
+            nextPosition.first = row;
+            nextPosition.second = i;
+            return nextPosition;
+        }
+    }
+    
+    // loop through next row until the end.
+    for (int r = row+1; r < 9; r++) {
+        for(int c = 0; c < 9; ++c){
+            if(grid_[r][c] == 0){
+                nextPosition.first = r;
+                nextPosition.second = c;
+                return nextPosition;
+            }
+        }
+    }
+
+    nextPosition.first = -1;
+    nextPosition.second = -1;
+    return nextPosition;
+}
 
 bool Sudoku::isBoardSolvable(){
     return isSolvable;
@@ -66,6 +95,8 @@ void Sudoku::SolveBoard() {
     // [1,2] -> [1,2] 
     if(isSolvable){
         grid_copy_ = grid_;
+        //  loop to find all 0's
+        //  for 
         std::stack <position> backtrack_stack;
         SolveBoard(grid_copy_, backtrack_stack);
     }
