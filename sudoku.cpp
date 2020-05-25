@@ -15,13 +15,52 @@ bool Sudoku::SolveBoard(const std::vector<std::vector<int>>& board, std::stack<p
         3) Choose a value to fill the box, and (1) 
         4) If stack.empty() => return isSolvable = false;
     */
-   std::pair<int, int> pos;
+    std::vector<int> possible_values;
+    std::pair<int, int> pos;
+    position stack_item;
     if (grid_[0][0] == 0) {
         pos = std::make_pair(0,0);
+        possible_values = possibleValues(0,0);
     }
+    else{
+        pos = nextPositionFrom(0, 0);
+        possible_values = possibleValues(pos.first, pos.second);
+    }
+    // initialize the stack
+    // stack_item.row = pos.first;
+    // stack_item.col = pos.second;
+    // stack_item.possible_values = possible_values;
+    stack_item = position(pos.first, pos.second, possible_values);
     
-    pos = nextPositionFrom(0,0);
-   
+    backtrack_stack.push(stack_item);    
+
+    /*              
+        stack: [pos1{5,6}, pos2{2,3}, pos3{}, pos4{2,3,4}]
+    */
+    
+    // while loop
+    while(!backtrack_stack.empty()) {
+        auto& item = backtrack_stack.top();
+        if (item.possible_values.size() == 0) {
+            grid_copy_[item.row][item.col] = 0;
+            backtrack_stack.pop();
+        }
+        else {
+            //  Sets the grid position to one of the possible values and deletes that value from the position
+            int val = item.possible_values[0];
+            grid_copy_[item.row][item.col] = val;
+            item.possible_values.erase(item.possible_values.begin());
+
+            // look for next position, and push onto stack
+            std::pair<int,int> next_pos = nextPositionFrom(item.row, item.col);
+            std::vector<int> next_pos_values = possibleValues(next_pos.first, next_pos.second);
+            position new_stack_item(next_pos.first, next_pos.second, next_pos_values);
+            backtrack_stack.push(new_stack_item);
+        }
+        // std::vector<int> vec = item.possible_values;
+    }
+
+    grid_ = grid_copy_;
 
     return 0;
 }
@@ -57,28 +96,29 @@ std::vector<int> Sudoku::possibleValues(int row, int col) {
     // unordered_set => {1,2,3,4,5,6,7,8,9}
     // row => {1,2,3,4,5,6}
     // col => {7} 
+    // return --> {8,9}
     std::vector<int> arr;
-    // std::unordered_set<int> possible_values = {1,2,3,4,5,6,7,8,9};
+    std::unordered_set<int> possible_values = {1,2,3,4,5,6,7,8,9};
 
-    // //  Row
-    // for(int c = 0; c < 9; ++c){
-    //     if(col != c){
-    //         auto itr = possible_values.find(grid_copy_[row][c]);
-    //         if(itr != possible_values.end()){
-    //             possible_values.erase(itr);
-    //         }
-    //     }
-    // }
+    //  Row
+    for(int c = 0; c < 9; ++c){
+        if(col != c){
+            auto itr = possible_values.find(grid_copy_[row][c]);
+            if(itr != possible_values.end()){
+                possible_values.erase(itr);
+            }
+        }
+    }
 
-    // // Column
-    // for (int r = 0; r < 9; r++) {
-    //     if (r != row) {
-    //         auto itr = possible_values.find(grid_copy_[r][col]);
-    //         if(itr != possible_values.end()) {
-    //             possible_values.erase(itr);
-    //         }
-    //     }
-    // }
+    // Column
+    for (int r = 0; r < 9; r++) {
+        if (r != row) {
+            auto itr = possible_values.find(grid_copy_[r][col]);
+            if(itr != possible_values.end()) {
+                possible_values.erase(itr);
+            }
+        }
+    }
 
     // 3x3 boxes 
     int starting_row, starting_col;
@@ -127,8 +167,23 @@ std::vector<int> Sudoku::possibleValues(int row, int col) {
         starting_row = 6;
         starting_col = 6;
     }
-    
-    std::cout << "starting row: " << starting_row << " | starting col: " << starting_col ;
+    // for testing
+    // std::cout << "starting row: " << starting_row << " | starting col: " << starting_col ;
+
+    // loop through specific 3x3 box
+    for (int r = starting_row; r < starting_row + 3; ++r) {
+        for(int c = starting_col; c < starting_col + 3; ++c) {
+            if(r != row && c != col) {
+                if (possible_values.count(grid_copy_[r][c])) {
+                    possible_values.erase( possible_values.find(grid_copy_[r][c]) );
+                }
+            }
+        }
+    }
+
+    for(auto val : possible_values) {
+        arr.push_back(val);
+    }
     
     return arr;
 }
@@ -158,10 +213,13 @@ Sudoku::Sudoku() {
             grid_[i].push_back(0);
         }
     }
+
+    isSolvable = true;
 }
 
-Sudoku::Sudoku(std::vector<std::vector<int>> grid) {
+Sudoku::Sudoku(std::vector<std::vector<int> > grid) {
     grid_ = grid;
+    isSolvable = true;
 }
 
 void Sudoku::SolveBoard() {
@@ -177,7 +235,6 @@ void Sudoku::SolveBoard() {
     else {
         isSolvable = false;
     }
-
 
     // [0,0] -> [1,2] => [0,0] -> [2]
     // [1,2] -> [1,2] 
