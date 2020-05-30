@@ -5,7 +5,7 @@
 
 #include "sudoku.hpp"
 
-bool Sudoku::SolveBoard(const std::vector<std::vector<int>>& board, std::stack<position>& backtrack_stack){
+bool Sudoku::SolveBoard(const std::vector<std::vector<int>>& board, std::stack<position>& backtrack_stack, int& filled_count){
     // int row = board.size();
     // int col = board[0].size();
     
@@ -17,7 +17,7 @@ bool Sudoku::SolveBoard(const std::vector<std::vector<int>>& board, std::stack<p
     */
     std::vector<int> possible_values;
     std::pair<int, int> pos;
-    position stack_item;
+    // position stack_item;
     if (grid_[0][0] == 0) {
         pos = std::make_pair(0,0);
         possible_values = possibleValues(0,0);
@@ -27,10 +27,7 @@ bool Sudoku::SolveBoard(const std::vector<std::vector<int>>& board, std::stack<p
         possible_values = possibleValues(pos.first, pos.second);
     }
     // initialize the stack
-    // stack_item.row = pos.first;
-    // stack_item.col = pos.second;
-    // stack_item.possible_values = possible_values;
-    stack_item = position(pos.first, pos.second, possible_values);
+    position stack_item(pos.first, pos.second, possible_values);
     
     backtrack_stack.push(stack_item);    
 
@@ -39,24 +36,32 @@ bool Sudoku::SolveBoard(const std::vector<std::vector<int>>& board, std::stack<p
     */
     
     // while loop
-    while(!backtrack_stack.empty()) {
+    while(!backtrack_stack.empty() && filled_count < 81) {
         auto& item = backtrack_stack.top();
         if (item.possible_values.size() == 0) {
             grid_copy_[item.row][item.col] = 0;
             backtrack_stack.pop();
+            filled_count--;
         }
         else {
             //  Sets the grid position to one of the possible values and deletes that value from the position
             int val = item.possible_values[0];
             grid_copy_[item.row][item.col] = val;
             item.possible_values.erase(item.possible_values.begin());
+            
+            filled_count++;
 
             // look for next position, and push onto stack
             std::pair<int,int> next_pos = nextPositionFrom(item.row, item.col);
-            std::vector<int> next_pos_values = possibleValues(next_pos.first, next_pos.second);
-            position new_stack_item(next_pos.first, next_pos.second, next_pos_values);
-            backtrack_stack.push(new_stack_item);
+            
+            if(next_pos.first != -1 && next_pos.second != -1){
+                std::vector<int> next_pos_values = possibleValues(next_pos.first, next_pos.second);
+                position new_stack_item(next_pos.first, next_pos.second, next_pos_values);
+                backtrack_stack.push(new_stack_item);
+            }
+            //  Check if board is correct and set the bool 
         }
+        std::cout << "filled_count: " << filled_count << "in\n";
         // std::vector<int> vec = item.possible_values;
     }
 
@@ -224,26 +229,32 @@ Sudoku::Sudoku(std::vector<std::vector<int> > grid) {
 
 void Sudoku::SolveBoard() {
     //  Checks if the board has correct params
+    int filled_count = 0;
     if(grid_.size() == 9) {
         for(int i = 0; i < 9; ++i){
             if(grid_[i].size() != 9){
                 isSolvable = false;
                 break;
             }
+            for(int j = 0; j < 9; ++j) {
+                if (grid_[i][j] != 0) {
+                    filled_count++;
+                }
+            }
         }
-    } 
+    }
     else {
         isSolvable = false;
     }
+
+    
 
     // [0,0] -> [1,2] => [0,0] -> [2]
     // [1,2] -> [1,2] 
     if(isSolvable){
         grid_copy_ = grid_;
-        //  loop to find all 0's
-        //  for 
         std::stack <position> backtrack_stack;
-        SolveBoard(grid_copy_, backtrack_stack);
+        SolveBoard(grid_copy_, backtrack_stack, filled_count);
     }
     else{
         std::cout << "Sudoku Board parameters are invalid." << std::endl;

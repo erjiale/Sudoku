@@ -26,7 +26,7 @@ LIBS_ALL =  -L/usr/lib -L/usr/local/lib
 
 #First Program (ListTest)
 
-Cpp_OBJ= main.o 
+Cpp_OBJ= main.o sudoku.o
 
 PROGRAM_NAME= main
 

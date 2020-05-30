@@ -15,7 +15,6 @@ struct position {
     int row;
     int col;
     std::vector<int> possible_values;
-    position();
     position(int r, int c, std::vector<int> arr) {
         row = r;
         col = c;
@@ -32,7 +31,7 @@ class Sudoku {
 
         //  Private Recursion Function
         // bool SolveBoard(const std::vector<std::vector<int>>& board); 
-        bool SolveBoard(const std::vector<std::vector<int> >& board, std::stack<position>& backtrack_stack);
+        bool SolveBoard(const std::vector<std::vector<int>>& board, std::stack<position>& backtrack_stack, int& counter);
         bool isBoardSolvable();
         bool isGridFull();
         //  Helper Functions
