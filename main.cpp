@@ -4,6 +4,8 @@
 */
 
 //  Import files
+#include <fstream>
+#include <sstream>
 #include "sudoku.hpp"
 
 // void testCases();
@@ -13,34 +15,50 @@ int main(int args, char *argv[] ) {
     //     printf(Usage: %s gray-image threshold-level binary-image\n, argv[0]);
     //     return 0;
     // }
+    std::ifstream file;
+    std::string row;
+    int row_col, row_counter = 0;
+    file.open("sudokuInput.txt");
 
-    std::vector<std::vector<int> > sudoku_input  = {    
-                        {5,3,0,0,7,0,0,0,0},
-                        {6,0,0,1,9,5,0,0,0},
-                        {0,9,8,0,0,0,0,6,0},
-                        {8,0,0,0,6,0,0,0,3},
-                        {4,0,0,8,0,3,0,0,1},
-                        {7,0,0,0,2,0,0,0,6},
-                        {0,6,0,0,0,0,2,8,0},
-                        {0,0,0,4,1,9,0,0,5},
-                        {0,0,0,0,8,0,0,7,9}
-                        // {0,0,0,0,0,0,0,0,0},
-                        // {0,0,0,0,0,0,0,0,0},
-                        // {0,0,0,0,0,0,0,0,0},
-                        // {0,0,0,0,1,0,0,0,0},
-                        // {0,0,0,0,0,0,0,0,0},
-                        // {0,0,0,0,0,0,0,0,0},
-                        // {0,0,0,0,0,0,0,0,0},
-                        // {0,0,0,0,2,0,0,0,0},
-                        // {0,0,0,0,0,0,0,0,0}
-                        
-    };
+    std::vector<std::vector<int>> sudoku_input;
+    std::vector<int> empty_vector;
+    for (int i = 0; i < 9; i++) {
+        sudoku_input.push_back(empty_vector);
+    }
 
-    Sudoku grid;
+    if(file) {
+        while(getline(file, row)) {
+            std::istringstream ss(row);
+            for (int col = 0; col < row.length(); col++) {
+                if (row[col] != ' ') {
+                    ss >> row_col;
+                    sudoku_input[row_counter].push_back(row_col);
+                    // std::cout << row_col << " ";
+                }
+            }
+            row_counter++;
+            // std::cout << std::endl;
+        }
+        file.close();
+    }
+    else {
+        std::cout << "Error opening the file\n";
+    }
+    
+    // std::vector<std::vector<int> > sudoku_input  = {    
+    //                         {5,3,0,0,7,0,0,0,0},
+    //                         {6,0,0,1,9,5,0,0,0},
+    //                         {0,9,8,0,0,0,0,6,0},
+    //                         {8,0,0,0,6,0,0,0,3},
+    //                         {4,0,0,8,0,3,0,0,1},
+    //                         {7,0,0,0,2,0,0,0,6},
+    //                         {0,6,0,0,0,0,2,8,0},
+    //                         {0,0,0,4,1,9,0,0,5},
+    //                         {0,0,0,0,8,0,0,7,9}
+    //     };
+
+    Sudoku grid(sudoku_input);
     grid.SolveBoard();
-    // std::vector<int> myv = grid.possibleValues(3,3);
-    // testCases();
-    // Function/class/object that lets user fill out the Sudoku
     grid.PrintBoard();
     return 0;
 }

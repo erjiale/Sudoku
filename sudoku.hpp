@@ -7,9 +7,13 @@
 #define SUDOKU_H
 
 #include <iostream>
+#include <algorithm>
 #include <vector>
 #include <stack>
 #include <unordered_set>
+#define RESET 	"\033[0m"
+#define BEAUTIFUL 	"\033[34m"
+#define RED "\033[31m"
 
 struct position {
     int row;

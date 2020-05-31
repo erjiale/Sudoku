@@ -61,7 +61,7 @@ bool Sudoku::SolveBoard(const std::vector<std::vector<int>>& board, std::stack<p
             }
             //  Check if board is correct and set the bool 
         }
-        std::cout << "filled_count: " << filled_count << "in\n";
+        // std::cout << "filled_count: " << filled_count << "in\n";
         // std::vector<int> vec = item.possible_values;
     }
 
@@ -230,6 +230,8 @@ Sudoku::Sudoku(std::vector<std::vector<int> > grid) {
 void Sudoku::SolveBoard() {
     //  Checks if the board has correct params
     int filled_count = 0;
+    grid_copy_ = grid_;
+    std::vector<int> possible_values;
     if(grid_.size() == 9) {
         for(int i = 0; i < 9; ++i){
             if(grid_[i].size() != 9){
@@ -239,6 +241,12 @@ void Sudoku::SolveBoard() {
             for(int j = 0; j < 9; ++j) {
                 if (grid_[i][j] != 0) {
                     filled_count++;
+                    possible_values = possibleValues(i,j);
+                    auto it = find(possible_values.begin(), possible_values.end(), grid_[i][j]);
+                    if(it == possible_values.end()){
+                        isSolvable = false;
+                        break;
+                    }
                 }
             }
         }
@@ -257,7 +265,7 @@ void Sudoku::SolveBoard() {
         SolveBoard(grid_copy_, backtrack_stack, filled_count);
     }
     else{
-        std::cout << "Sudoku Board parameters are invalid." << std::endl;
+        std::cout << RED << "Invalid 9x9 Sudoku." << std::endl;
     }
 }
 
@@ -265,10 +273,11 @@ void Sudoku::PrintBoard() {
     for(int i = 0; i < 9; ++i){
 
         for(int j = 0; j < 9; ++j){
-            std::cout << grid_[i][j] << " ";
+            std::cout << BEAUTIFUL << grid_[i][j] << " ";
         }
         std::cout << std::endl;
     }
+    std::cout << RESET;
 }
 
 
